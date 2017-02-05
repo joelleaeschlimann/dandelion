@@ -14,7 +14,6 @@ static bool removeShapeOffScreen(shared_ptr<ofxBox2dBaseShape> shape) {
 
 
 void ofApp::setup(){
-    isLandscape = false;
     isAnimation = true;
     
     
@@ -37,23 +36,13 @@ void ofApp::setup(){
    // serial.setup("/dev/tty.usbserial-A6026LBJ", 9600);
     
     attractPoint2.set(ofGetWidth()/2, ofGetHeight()/2-200);
-    attractPoint.set(ofGetWidth()/2, ofGetHeight()/2);
+    attractPoint.set(1225, 445);
     
-    bulbDandelion.load("bulb-01.png");
     
     if(isAnimation){
         bird.setup();
     }
  
-    if(isLandscape){
-        for (int l=0; l<1; l++) {
-            landscape lanscape;
-            landscapes[l].setup();
-            landscapes.push_back(lanscape);
-            landscapes[l].loadImageLandscape(1+l);
-        }
-    }
-
     initialisationSeeds();
     createAttractors();
 }
@@ -71,12 +60,6 @@ void ofApp::update(){
     box2d.update();
     if(isAnimation){
         bird.update();
-    }
-    
-    if(isLandscape){
-        for (int m=0; m<landscapes.size(); m++) {
-            landscapes[m].update();
-        }
     }
     
     
@@ -122,35 +105,32 @@ void ofApp::update(){
             
             selectAnimForce(0);
         
-        }else if (dataSensor > 0){
-        
-            cout<<int(dataSensor)<<endl,
-            selectAnimForce(4);
+        }else if (dataSensor > 1){
+            cout<<int(dataSensor)<<endl;
+            if(dataSensor >0 && dataSensor <=2){
+                selectAnimForce(2);
+            }else if(dataSensor >2 && dataSensor <=4){
+                selectAnimForce(3);
+                
+            }else if(dataSensor > 8){
+                selectAnimForce(4);
+            }
+
         }
     
     }
     
-    
-   /* if(isAlive){
-        if(dataSensor == 0){
-              }else if(dataSensor >0 && dataSensor <=2){
-                selectAnimForce(1);
-        }else if(dataSensor >2 && dataSensor <=4){
-            selectAnimForce(2);
-            
-        }else if(dataSensor > 4){
-            selectAnimForce(4);
-        }
-    }*/
+    cout<<attractPoint<<endl;
+
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
     //cout<<ofGetWidth()<<" "<<ofGetHeight()<<endl;
     if(debug){
-         ofBackground(222);
+        ofBackground(222);
     }else{
-     ofBackgroundHex(0);
+        ofBackgroundHex(0);
     }
 
     if(isAnimation){
@@ -176,15 +156,7 @@ void ofApp::draw(){
         drawSeeds(m_circles,m_images);
         drawSeeds(s_circles,s_images);
     }
-   
-    bulbDandelion.draw(attractPoint.x,attractPoint.y);
-    if(isLandscape){
-    
-        for (int m=0; m<landscapes.size(); m++) {
-            landscapes[m].draw();
-        }
-    }
-}
+ }
 
 //-----------------------------------------------------------------
 
@@ -201,9 +173,6 @@ void ofApp::readDataFromSensor(){
         dataString = ofToString(bytesReturned);
         dataSensor = ofToFloat(dataString)/100;
         dataSensor = ofMap(dataSensor, 0 , 4.9 , 0, 10);
-        
-    
-        
     }
     
     countCycles ++;
@@ -223,7 +192,15 @@ void ofApp::selectAnimForce(int puissance){
             setLivingRotationSeed(s_circles,ofRandom(0.2,0.6));
             break;
         case 1 :
-            
+            //box2d.setGravity(0, 0);
+            setLivingRotationSeed(circles,ofRandom(0.5,2));
+            setLivingRotationSeed(m_circles,ofRandom(0.5,2));
+            setLivingRotationSeed(s_circles,ofRandom(0.5,2));
+
+           
+
+            break;
+        case 2:
             //box2d.setGravity(0, 0);
             setLivingRotationSeed(circles,ofRandom(1,4));
             setLivingRotationSeed(m_circles,ofRandom(1,4));
@@ -231,14 +208,11 @@ void ofApp::selectAnimForce(int puissance){
             
             
             break;
-        case 2:
+        case 3:
             
             setForceOnLittleBlow(circles,1);
             setForceOnLittleBlow(m_circles,1);
             setForceOnLittleBlow(s_circles,1);
-            
-            break;
-        case 3:
             
           
             break;
@@ -257,7 +231,7 @@ void ofApp::selectAnimForce(int puissance){
 
 void ofApp::setGravityOnBlow(){
     //cout<<"GRAVITY"<<endl;
-    box2d.setGravity(0.1, 3);
+    box2d.setGravity(0.1, 5);
 }
 
 //-----------------------------------------------------------------
@@ -291,10 +265,10 @@ void ofApp::setForceOnBlow(vector <shared_ptr<ofxBox2dRect> > elements){
     float time = ofGetElapsedTimef();
     
     for(int i=0;i<elements.size();i++){
-        float noisy = ofNoise(time);
+        float noisy = ofNoise(time)+0.4;
         float forceX = ofMap(noisy,0,1,-2, 2);
-        force.set(ofRandom(forceX,0.05),-0.3);
-        elements[i].get()->addForce(force,1);
+        force.set(ofRandom(forceX,0.05),-dataSensor*0.02);
+        elements[i].get()->addForce(force,2);
     }
     
 }
@@ -319,7 +293,8 @@ void ofApp::setLivingRotationSeed(vector <shared_ptr<ofxBox2dRect> > elements, f
 //-----------------------------------------------------------------
 
 void ofApp::initialisationSeeds(){
-    
+    imagePos = 0;
+    imagesize =0;
    
     box2d.setGravity(0, 0);
     force.set(0,0);
@@ -396,7 +371,16 @@ void ofApp::loadImageSeedbyId(int idSeed,shared_ptr<ofxBox2dRect> circle){
 
 }
 void ofApp::drawSeeds(vector <shared_ptr<ofxBox2dRect>>shapes, vector<ofImage> tabOfImages){
+    if(imagesize < 150 ){
+        selectAnimForce(1);
+        imagesize += 1*0.4;
+        imagePos +=0.13*0.4;
+        cout<<imagePos<<endl;
+    }
+  
     for(int i=0; i<shapes.size(); i++) {
+        
+      
         
         ofFill();
         ofSetColor(255,0);
@@ -405,6 +389,7 @@ void ofApp::drawSeeds(vector <shared_ptr<ofxBox2dRect>>shapes, vector<ofImage> t
         imagePosition.set(
                           shapes[i].get()->getPosition().x,
                           shapes[i].get()->getPosition().y);
+       
         ofPushMatrix();
             ofSetRectMode(OF_RECTMODE_CENTER);
             tabOfImages[i].setAnchorPoint(0, imagePos ) ;
@@ -413,6 +398,7 @@ void ofApp::drawSeeds(vector <shared_ptr<ofxBox2dRect>>shapes, vector<ofImage> t
             ofRotate(90);
             ofRotate(shapes[i].get()->getRotation());
             ofSetColor(255);
+        
             tabOfImages[i].draw(0,0,imagesize,imagesize);
             ofPopMatrix();
     }
@@ -450,40 +436,7 @@ void ofApp::keyPressed(int key) {
                 press = 0;
                 
             }
-            break;
-        case 'a':
-            if(isLandscape) landscapes[0].sizeW-=10;
-            break;
-        case 's':
-            if(isLandscape) landscapes[0].sizeH-=10;
-            break;
-        case 'd':
-            if(isLandscape) landscapes[0].sizeW+=10;
-            break;
-        case 'f':
-             if(isLandscape) landscapes[0].sizeH+=10;
-            break;
-        case 'p':
-            if(isLandscape) cout<<"position landscape "<<landscapes[0].sizeW<<" "<<landscapes[0].sizeH<<endl;
-            
-             if(isLandscape) cout<<"size landscape "<<landscapes[0].posx<<" "<<landscapes[0].posy<<endl;
-            
-            break;
-        case OF_KEY_RIGHT:
-             if(isLandscape) landscapes[0].posx+=10;
-            break;
-        case OF_KEY_LEFT:
-             if(isLandscape) landscapes[0].posx-=10;
-            break;
-        case OF_KEY_UP:
-             if(isLandscape) landscapes[0].posy-=10;
-            break;
-        case OF_KEY_DOWN:
-             if(isLandscape) landscapes[0].posy+=10;
-            break;
-        default:
-            break;
-    }
+        }
 }
 
 void ofApp::mouseDragged(int x, int y, int button){

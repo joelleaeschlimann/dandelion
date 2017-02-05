@@ -4,7 +4,6 @@
 #include "ofxBox2d.h"
 #include "bird.hpp"
 #include "cloud.hpp"
-#include "landscape.hpp"
 
 
 class ofApp : public ofBaseApp{
@@ -52,8 +51,8 @@ class ofApp : public ofBaseApp{
         float angle = 0;
         float attractorSize = 20;
         float isAlive = true;
-        float imagesize = 150;
-        float imagePos = 20;
+        float imagesize = 4;
+        float imagePos = 0;
         float wind = 10;
         float seedBlow = 0;
         float getRotationSeed = 0;
@@ -66,7 +65,6 @@ class ofApp : public ofBaseApp{
         int numberOfElementsLeft = 0;
     int restartTimer = 0;
     
-    ofImage bulbDandelion;
     
     //-15
         ofVec2f attractPoint;
@@ -79,9 +77,9 @@ class ofApp : public ofBaseApp{
         vector<ofImage> images;
         vector<ofImage> m_images;
         vector<ofImage> s_images;
+    bool isGrowing;
     
     vector<cloud> clouds;
-    vector<landscape> landscapes;
     
     bird bird;
    

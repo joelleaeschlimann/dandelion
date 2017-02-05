@@ -108,7 +108,7 @@ void bird::update(){
     positionBird.y = positionBird.y +increaseMovement;
     
     if(positionBird.x < endPosX){
-       if(isAlive) positionBird.x += 20;
+       if(isAlive) positionBird.x += 10;
     }else{
         isAlive = false;
         restartTimerValue = ofRandom(10,1000);
@@ -125,7 +125,7 @@ void bird::update(){
         
     }
     if(imageAnimation<birds.size()-1){
-        imageAnimation+=0.4;
+        imageAnimation+=0.2;
     }else{
         imageAnimation = 0;
     }
