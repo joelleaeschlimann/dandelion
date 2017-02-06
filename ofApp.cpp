@@ -7,7 +7,6 @@ static bool removeShapeOffScreen(shared_ptr<ofxBox2dBaseShape> shape) {
         return true;
     }
     return false;
-    
 }
 
 //--------------------------------------------------------------
@@ -36,7 +35,7 @@ void ofApp::setup(){
    // serial.setup("/dev/tty.usbserial-A6026LBJ", 9600);
     
     attractPoint2.set(ofGetWidth()/2, ofGetHeight()/2-200);
-    attractPoint.set(1225, 445);
+    attractPoint.set(1225, 480);
     
     
     if(isAnimation){
@@ -106,7 +105,7 @@ void ofApp::update(){
             selectAnimForce(0);
         
         }else if (dataSensor > 1){
-            cout<<int(dataSensor)<<endl;
+            //cout<<int(dataSensor)<<endl;
             if(dataSensor >0 && dataSensor <=2){
                 selectAnimForce(2);
             }else if(dataSensor >2 && dataSensor <=4){
@@ -120,13 +119,13 @@ void ofApp::update(){
     
     }
     
-    cout<<attractPoint<<endl;
+    
 
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    //cout<<ofGetWidth()<<" "<<ofGetHeight()<<endl;
+ 
     if(debug){
         ofBackground(222);
     }else{
@@ -149,7 +148,6 @@ void ofApp::draw(){
         attractors[i].get()->draw();
         ofPopStyle();
     }
-    
     
     if(isAlive) {
         drawSeeds(circles,images);
@@ -267,7 +265,7 @@ void ofApp::setForceOnBlow(vector <shared_ptr<ofxBox2dRect> > elements){
     for(int i=0;i<elements.size();i++){
         float noisy = ofNoise(time)+0.4;
         float forceX = ofMap(noisy,0,1,-2, 2);
-        force.set(ofRandom(forceX,0.05),-dataSensor*0.02);
+        force.set(ofRandom(forceX,0.05),-0.3);
         elements[i].get()->addForce(force,2);
     }
     
@@ -375,7 +373,6 @@ void ofApp::drawSeeds(vector <shared_ptr<ofxBox2dRect>>shapes, vector<ofImage> t
         selectAnimForce(1);
         imagesize += 1*0.4;
         imagePos +=0.13*0.4;
-        cout<<imagePos<<endl;
     }
   
     for(int i=0; i<shapes.size(); i++) {
@@ -436,7 +433,11 @@ void ofApp::keyPressed(int key) {
                 press = 0;
                 
             }
-        }
+       
+        case 'a':
+            cout<<attractPoint<<endl;
+            break;
+     }
 }
 
 void ofApp::mouseDragged(int x, int y, int button){

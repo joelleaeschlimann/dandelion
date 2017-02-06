@@ -9,13 +9,8 @@
 #include "bird.hpp"
 
 void bird::setup(){
-    //endPosX = 2560+125;
     endPosX = 2560+125;
-    
     loadImageBirds();
-    
-
-    
 }
 
 void bird::loadImageBirds(){
@@ -66,8 +61,6 @@ void bird::draw(){
     
     
     if(isAlive) {
-        //positionBird.set(changePosition,movementPosX);
-        
         int anim = int(imageAnimation);
         //150 // 192
         
